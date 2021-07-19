@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Link, Route } from "react-router-dom";
 import HomeScreen from "./screen/HomeScreen";
@@ -6,17 +6,55 @@ import RegisterScreen from "./screen/RegisterScreen";
 import SigninScreen from "./screen/SigninScreen";
 import MerchantScreen from "./screen/MerchantScreen";
 import ResetPasswordScreen from "./screen/ResetPasswordScreen";
-import { signout } from "./actions/userActions";
+import { signout, retrieveMerchants } from "./actions/userActions";
+import AdminRoute from "./components/AdminRoute";
+import MerchantsListScreen from "./screen/MerchantsListScreen";
+import MercahantsEditScreen from "./screen/MercahantsEditScreen";
+// import MerchantsRoute from "./components/MerchantsRoute";
 
-function App() {
+function App(props) {
   //  const [handleClick, setHandleClick] = useState(false);
+  // const [id, setId] = useState("");
+
+  // const redirect = props.location.search
+  //   ? props.location.search.split("=")[0]
+  //   : "/";
 
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
 
+  const userRetrieveMerchants = useSelector(
+    (state) => state.userRetrieveMerchants
+  );
+
+  const { merchant } = userRetrieveMerchants;
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (userInfo) {
+      console.log(userInfo._id);
+      dispatch(retrieveMerchants(userInfo._id));
+    } else {
+      return null;
+    }
+  }, [dispatch, userInfo]);
+
+  // useEffect(() => {
+  //   dispatch(retrieveMerchants(merchant.id));
+  // }, [dispatch, merchant]);
+
+  // console.log(userRetrieveMerchants);
+
+  // const userRetrieveMerchants = useSelector(
+  //   (state) => state.userRetrieveMerchants
+  // );
+
+  // const userList = useSelector((state) => state.userList);
+  // const { loading, error, users } = userList;
+
   const signoutHandler = () => {
     dispatch(signout());
+    // dispatch(retrieveAllMerchants());
   };
 
   // const redirect = props.location.search
@@ -90,10 +128,10 @@ function App() {
               <Link to="/signin">Sign In</Link>
             )}
 
-            {userInfo && userInfo.isSeller && (
+            {merchant && merchant && (
               <div className="dropdown">
                 <Link to="#admin">
-                  Seller <i className="fa fa-caret-down"></i>
+                  {merchant.company_name} <i className="fa fa-caret-down"></i>
                 </Link>
                 <ul className="dropdown-content">
                   <li>
@@ -106,7 +144,7 @@ function App() {
               </div>
             )}
 
-            {userInfo && userInfo.isAdmin && (
+            {userInfo && userInfo.IsAdmin && (
               <div className="dropdown">
                 <Link to="#admin">
                   Admin <i className="fa fa-caret-down"></i>
@@ -123,6 +161,9 @@ function App() {
                   </li>
                   <li>
                     <Link to="/userlist">Users</Link>
+                  </li>
+                  <li>
+                    <Link to="/merchantslist">Merchants</Link>
                   </li>
                 </ul>
               </div>
@@ -159,6 +200,16 @@ function App() {
           <Route path="/merchant" component={MerchantScreen}></Route>
           <Route path="/resetpassword" component={ResetPasswordScreen}></Route>
           <Route path="/" component={HomeScreen} exact></Route>
+          <AdminRoute
+            path="/merchantslist"
+            component={MerchantsListScreen}
+            exact
+          ></AdminRoute>
+
+          <AdminRoute
+            path="/merchants/:id/edit"
+            component={MercahantsEditScreen}
+          ></AdminRoute>
         </main>
         <footer className="row center">
           <div>All right reserved</div>

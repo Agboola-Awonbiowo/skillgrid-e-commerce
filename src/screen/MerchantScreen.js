@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-// import { registerAsMerchant } from '../actions/userActions';
-// import LoadingBox from '../components/LoadingBox';
+// import { registerAsMerchant } from "../actions/userActions";
+// import { signin } from "../actions/userActions";
+import LoadingBox from "../components/LoadingBox";
 import MessageBox from "../components/MessageBox";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import FlashMessage from "react-flash-message";
-import Modal from 'react-modal';
-import { Checkmark } from 'react-checkmark';
+import Modal from "react-modal";
+import { Checkmark } from "react-checkmark";
+// import { retrieveMerchants } from "../actions/userActions";
+// import { useDispatch } from "react-redux";
 
-Modal.setAppElement('#root')
+Modal.setAppElement("#root");
 
 export default function MerchantScreen(props) {
   const [address, setAddress] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setloading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   // const [change, setChange] = useState(false);
   // const [image, setImage] = useState(null)
+
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
 
-  // const userRegisterAsMerchant = useSelector((state) => state.userRegisterAsMerchant);
-  // const { success: successRegister, loading: loadingRegister, error: errorRegister } = userRegisterAsMerchant;
+  // const userRegisterAsMerchant = useSelector(
+  //   (state) => state.userRegisterAsMerchant
+  // );
+  // const { loading, error, success } = userRegisterAsMerchant;
 
-  //   const dispatch = useDispatch();
+  // const userRegisterAsMerchant = useSelector((state) => state.userRegister);
+  // const { loading, error, success } = userRegisterAsMerchant;
+
+  // const dispatch = useDispatch();
   // const history = useHistory();
 
   const redirect = props.location.search
@@ -38,16 +48,49 @@ export default function MerchantScreen(props) {
     }
   }, [props.history, redirect, userInfo]);
 
-  // useEffect(() => {
-  //   let interval = null;
-  //   if (success) {  
-  //      setSuccess(false);
-  //      interval = setInterval(() => {
-  //       window.location.replace(redirect);
-  //      }, 6000);
-  //   }
-  //   return () => interval ? clearInterval(interval) : null;
-  // }, [success])
+  // const formik = useFormik({
+  //   initialValues: {
+  //     user_id: userInfo ? userInfo._id : redirect,
+  //     company_name: "",
+  //     company_address: "",
+  //     telephone: "",
+  //     state_location: "",
+  //     city: "",
+  //     photo_img: "",
+  //     trade_type: "",
+  //   },
+
+  //   validationSchema: Yup.object({
+  //     company_name: Yup.string()
+  //       .min(2, "Mininum 2 characters")
+  //       .max(50, "Maximum 50 characters")
+  //       .required("Required!"),
+  //     company_address: Yup.string().required("Required!"),
+  //     telephone: Yup.number().required("Required"),
+  //     state_location: Yup.string().required("Required!"),
+  //     city: Yup.string().required("Required!"),
+  //     photo_img: Yup.mixed().required("Required"),
+  //     trade_type: Yup.string().required("Required!"),
+  //   }),
+
+  //   onSubmit: (values) => {
+  //     // alert(JSON.stringify(values, null, 2));
+  //     // console.log(values.photo_img)
+  //     dispatch(
+  //       registerAsMerchant(
+  //         values.user_id,
+  //         values.company_name,
+  //         values.company_address,
+  //         values.telephone,
+  //         values.state_location,
+  //         values.city,
+  //         values.photo_img,
+  //         values.trade_type
+  //       )
+  //     );
+  //     console.log(values);
+  //   },
+  // });
 
   const formik = useFormik({
     initialValues: {
@@ -78,6 +121,7 @@ export default function MerchantScreen(props) {
       // alert(JSON.stringify(values, null, 2));
       // console.log(values.photo_img)
       // dispatch(registerAsMerchant(values.user_id, values.company_name, values.company_address, values.telephone, values.state_location, values.city, values.photo_img, values.trade_type));
+      setloading(true);
       let data = new FormData();
       data.append("user_id", values.user_id);
       data.append("company_name", values.company_name);
@@ -87,58 +131,42 @@ export default function MerchantScreen(props) {
       data.append("city", values.city);
       data.append("photo_img", values.photo_img);
       data.append("trade_type", values.trade_type);
-      return (
-        axios
-          .post("https://digital-gang.com/api/regmerchants/", data, {
-            headers: {
-              "content-type": "multipart/form-data",
-              Authorization: `Bearer ${userInfo.token}`,
-            },
-          })
-          .then((response) => {
-            // console.log(response.data);
-            setSuccess(response.data);
-            setModalOpen(true)  
-          })
-          .then(() => {
-            setTimeout(() => {
-              window.location.replace(redirect);
+      return axios
+        .post("https://isaacpyth.pythonanywhere.com/api/regmerchants/", data, {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        })
+        .then((response) => {
+          setSuccess(response.data);
+          setModalOpen(true);
+        })
+        .then(() => {
+          setloading(false);
+        })
+        .then(() => {
+          setTimeout(() => {
+            window.location.replace(redirect);
           }, 7000);
-          })
-          
-          .catch((error) => {
-            // window.location.replace("/resgister")
-            setError({
-              // e.response.data.error
-              error: error.response.data,
-            });
-            console.log(error.response.data);
-            // return [error];
-          })
-      );
+        })
+
+        .catch((error) => {
+          setloading(false);
+          setError({
+            error: error.response.data.detail,
+          });
+          console.log(error.response.data.detail);
+        });
     },
   });
 
-  // console.log(formik.values)
-
   const locaData = async () => {
-    const response = await axios.get("https://digital-gang.com/api/listcity/");
+    const response = await axios.get(
+      "https://isaacpyth.pythonanywhere.com/api/listcity/"
+    );
     setAddress(response.data.results);
   };
-
-  // const handleImageChange = (e) => {
-  //   formik.handleChange(e)
-
-  //   // const value = e.target.value;
-  //   // console.log(value);
-  //   // const files = e.target.files[0];
-  //   // console.log(files);
-  //     setImage({
-  //       photo_img: e.target.files[0],
-  //     });
-  //     console.log(e.target.files);
-  //   //  setImage(image)
-  // }
 
   // Need to build the City select options
   const [citiesOptions, setCitiesOptions] = useState([]);
@@ -165,28 +193,27 @@ export default function MerchantScreen(props) {
     locaData();
   }, []);
 
-  
-const customStyles = {
-  // overlay: {
-  //   backgroundColor:'grey'
-  // },
+  const customStyles = {
+    // overlay: {
+    //   backgroundColor:'grey'
+    // },
 
-  content : {
-    top        : '50%',
-    left       : '50%',
-    right      : 'auto',
-    bottom     : 'auto',
-    marginRight : '-50%',
-    transform  : 'translate(-50%, -50%)',
-    height : '300px',
-    width : '400px',
-    overflow: 'hidden',
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexDirection: 'column'
-  }
-};
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      height: "300px",
+      width: "400px",
+      overflow: "hidden",
+      display: "flex",
+      justifyContent: "space-around",
+      alignItems: "center",
+      flexDirection: "column",
+    },
+  };
 
   return (
     <div>
@@ -194,24 +221,20 @@ const customStyles = {
         <div>
           <h1>Register as merchant</h1>
         </div>
-        {/* {loadingRegister && <LoadingBox></LoadingBox>} */}
-        {error && (
-          <FlashMessage duration={5000}>
-            
-            <MessageBox variant="danger">user already exist</MessageBox>
-           
-          </FlashMessage>
-        )}
+
+        {loading && <LoadingBox>{loading}</LoadingBox>}
+        {error && <MessageBox variant="danger">{error.error}</MessageBox>}
 
         {success && (
           <FlashMessage duration={5000}>
             {" "}
-            <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}
-          
-            style={customStyles}
+            <Modal
+              isOpen={modalOpen}
+              toggle={() => setModalOpen(!modalOpen)}
+              style={customStyles}
             >
-            <Checkmark size='xLarge' color='green' />
-            <span>You have Successfully register as merchant</span>
+              <Checkmark size="xLarge" color="green" />
+              <span>You have Successfully register as merchant</span>
             </Modal>
           </FlashMessage>
         )}
@@ -241,30 +264,33 @@ const customStyles = {
             <p>{formik.errors.company_name}</p>
           )}
         </div>
-        <div>
-          <label>Company address</label>
-          <input
-            type="text"
-            name="company_address"
-            value={formik.values.company_address}
-            onChange={formik.handleChange}
-          />
-          {formik.errors.company_address && formik.touched.company_address && (
-            <p>{formik.errors.company_address}</p>
-          )}
-        </div>
+        <div className="add-tele">
+          <div>
+            <label>Company address</label>
+            <input
+              type="text"
+              name="company_address"
+              value={formik.values.company_address}
+              onChange={formik.handleChange}
+            />
+            {formik.errors.company_address &&
+              formik.touched.company_address && (
+                <p>{formik.errors.company_address}</p>
+              )}
+          </div>
 
-        <div>
-          <label>Telephone</label>
-          <input
-            type="number"
-            name="telephone"
-            value={formik.values.telephone}
-            onChange={formik.handleChange}
-          />
-          {formik.errors.telephone && formik.touched.telephone && (
-            <p>{formik.errors.telephone}</p>
-          )}
+          <div>
+            <label>Telephone</label>
+            <input
+              type="number"
+              name="telephone"
+              value={formik.values.telephone}
+              onChange={formik.handleChange}
+            />
+            {formik.errors.telephone && formik.touched.telephone && (
+              <p>{formik.errors.telephone}</p>
+            )}
+          </div>
         </div>
 
         <div>
@@ -290,7 +316,7 @@ const customStyles = {
           )}
         </div>
 
-        <div>
+        <div className="city">
           <label>City</label>
           <select
             type="select"
@@ -320,14 +346,13 @@ const customStyles = {
           <input
             type="file"
             id="image"
-            //  accept="image/png, image/jpeg"
+            // accept="image/png, image/jpeg"
             label="Choose Image"
             name="file"
             // value={formik.values.photo_img}
             onChange={(event) => {
               formik.setFieldValue("photo_img", event.target.files[0]);
             }}
-            //
           />
           {formik.errors.photo_img && formik.touched.photo_img && (
             <p>{formik.errors.photo_img}</p>

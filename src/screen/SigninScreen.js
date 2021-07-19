@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { signin } from '../actions/userActions';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { signin } from "../actions/userActions";
 // import { GoogleLogin } from 'react-google-login';
 // import googleLogo from '../img/google-icon.svg'
 // import FacebookLogin from 'react-facebook-login';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
 
 export default function SigninScreen(props) {
-    const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const redirect = props.location.search
-    ? props.location.search.split('=')[1]
-    : '/';
+    ? props.location.search.split("=")[1]
+    : "/";
 
   // const history = useHistory();
 
@@ -32,7 +32,6 @@ export default function SigninScreen(props) {
       props.history.push(redirect);
     }
   }, [props.history, redirect, userInfo]);
-
 
   return (
     <div className="form">
@@ -74,12 +73,15 @@ export default function SigninScreen(props) {
             New customer?{' '} <Link to={`/register?register=${redirect}`}>Create your account</Link>
           </div> */}
           <div className="forgot">
-           <span>forgot password?{' '} <Link to={'/resetpassword'}> Reset password</Link></span>
+            <span>
+              forgot password?{" "}
+              <Link to={"/resetpassword"}> Reset password</Link>
+            </span>
           </div>
         </div>
       </form>
       <div className="or">
-        <div>or</div> 
+        <div>or</div>
         <div>login with</div>
       </div>
       {/* <div className="social">
@@ -111,10 +113,11 @@ export default function SigninScreen(props) {
       </div> */}
 
       <div>
-      <label />
-          <div>
-            New customer?{' '} <Link to={`/register?register=${redirect}`}>Create your account</Link>
-          </div>
+        <label />
+        <div>
+          New customer?{" "}
+          <Link to={`/register?register=${redirect}`}>Create your account</Link>
+        </div>
       </div>
     </div>
   );

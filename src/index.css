@@ -335,3 +335,63 @@ p {
 .home > h1 {
   font-size: 80px;
 }
+
+/* merchant form flex */
+
+form .add-tele {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.add-tele input {
+  width: 85.5%;
+}
+
+.add-tele > div {
+  margin-top: 1rem;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table tbody tr:nth-of-type(odd) {
+  background-color: #f4f4f4;
+}
+.table td,
+.table th {
+  text-align: left;
+  border: 0.1rem solid #e4e4e4;
+  padding: 0.5rem;
+}
+.table button {
+  margin: 0 0.2rem;
+}
+
+.btn-table-error {
+  background-color: red;
+}
+
+.btn-table-success {
+  background-color: #20a020;
+}
+
+.photo_merchant {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+img {
+  height: 250px;
+  width: 250px;
+  border-radius: 100%;
+}
+
+/* .add-tele select {
+  width: 85.7%;
+} */
