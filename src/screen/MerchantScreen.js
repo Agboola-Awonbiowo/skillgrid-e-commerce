@@ -7,7 +7,7 @@ import MessageBox from "../components/MessageBox";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import FlashMessage from "react-flash-message";
+// import FlashMessage from "react-flash-message";
 import Modal from "react-modal";
 import { Checkmark } from "react-checkmark";
 // import { retrieveMerchants } from "../actions/userActions";
@@ -225,7 +225,7 @@ export default function MerchantScreen(props) {
         {loading && <LoadingBox>{loading}</LoadingBox>}
         {error && <MessageBox variant="danger">{error.error}</MessageBox>}
 
-        {success && (
+        {/* {success && (
           <FlashMessage duration={5000}>
             {" "}
             <Modal
@@ -237,7 +237,7 @@ export default function MerchantScreen(props) {
               <span>You have Successfully register as merchant</span>
             </Modal>
           </FlashMessage>
-        )}
+        )} */}
         <div style={{ display: "none" }}>
           <label></label>
           <input
