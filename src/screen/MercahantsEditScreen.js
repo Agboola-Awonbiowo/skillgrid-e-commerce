@@ -88,7 +88,7 @@ export default function MercahantsEditScreen(props) {
     // );
     setLoadingUpdate(true);
     let form_data = new FormData();
-    // form_data.append("photo_img", photo_img);
+    form_data.append("photo_img", photo_img); // you have created a variable in the past!, so i am just using it
     form_data.append("company_name", merchant.company_name);
     form_data.append("company_address", merchant.company_address);
     form_data.append("user_id", merchant.user_id);
@@ -103,11 +103,20 @@ export default function MercahantsEditScreen(props) {
       axios
         .put(
           `https://isaacpyth.pythonanywhere.com/api/retrievemerchants/${merchant.id}`,
-          merchant,
+          // merchant,
+          form_data, // API said file, but you are not submitting the "form_data" you created!!!
+          // NEXT Error : {"photo_img":["No file was submitted."]}
+          // so i want to upload a file manually!
+          // Next Error : {"photo_img":["The submitted data was not a file. Check the encoding type on the form."]}
+          // google error like i just did now, when everything looks right and you dont know why
+
+          // photo_img is not showing as a file, it should show as binary file or something
+          
+
           {
             headers: {
               // "content-type": "multipart/form-data",
-              "Content-Type": "application/json",
+              // "Content-Type": "application/json",
 
               Authorization: `Bearer ${userInfo.token}`,
             },
@@ -188,7 +197,7 @@ export default function MercahantsEditScreen(props) {
                 accept="image/png, image/jpeg"
                 // value={photo_img}
                 onChange={(e) => {
-                  setPhoto_Image("photo_img", e.target.files[0]);
+                  setPhoto_Image(e.target.files[0]); // setPhoto_Image(e.target.files[0]) NOT setPhoto_Image("photo_img", e.target.files[0])
                 }}
               ></input>
             </div>
@@ -265,7 +274,7 @@ export default function MercahantsEditScreen(props) {
             </div>
 
             <div>
-              <button type="submit" className="primary">
+              <button type="submit" className="primary" disabled={!photo_img}>
                 Update
               </button>
             </div>
